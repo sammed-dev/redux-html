@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <input type="text" id="todo">
+    <button onclick="addNewTodo()">Add todo</button>
+
+    <h1 id="count"></h1>
+
+    <div id="todos"></div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/4.2.0/redux.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/4.2.0/redux.min.js"> </script> -->
+    <script>
+
+        // console.log(Redux);
+
+        const reducer = (oldstate = [] ,action)=>{
+            if(action.type == "ADD_TODO")
+                return [
+                    ...oldstate,
+                    action.payload
+                ];
+            return []
+        }
+
+        const store = Redux.createStore(reducer);
+
+
+        const addNewTodo = () =>{
+            const input = document.getElementById('todo');
+            const value = input.value;
+            
+            store.dispatch({
+                type : "ADD_TODO",
+                payload : {
+                    text : value
+                }
+            })
+
+        }
+        
+
+        const renderCount = () =>{
+            const h1  = document.getElementById("count");
+            h1.innerHTML = store.getState().length
+        }
+
+        const rendertodos = () =>{
+            const todos = document.getElementById("todos");
+            todos.innerHTML = JSON.stringify(store.getState())
+        }
+
+
+        store.subscribe(renderCount);
+        store.subscribe(rendertodos);
+        const action = {
+            type : "ADD_TODO",
+            payload : {
+                text : "develop blogger"
+            }
+        }
+
+        store.dispatch(action)
+        console.log(store.getState());
+
+        const action2 = {
+            type : "ADD_TODO",
+            payload : {
+                text : "make some tea"
+            }
+        }
+
+        store.dispatch(action2)
+        console.log(store.getState());
+        // console.log(typeof(store.getState()));
+        console.log(store.getState().length);
+    </script>
+</body>
+</html>

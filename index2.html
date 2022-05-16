@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <input type="text" placeholder="Enter todo" id="todo">
+    <button onclick="addNewTodo()">Add todo</button>
+
+    <h1 id="count"></h1>
+
+    <ul id="todos" style="list-style: none;"></ul>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/4.2.0/redux.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/redux-logger/4.0.0/redux-logger.js"></script>
+    <script>
+
+        // console.log(Redux);
+
+        const ADD_TODO = "ADD_TODO"
+        const DELETE_TODO = "DELETE_TODO"
+
+        const reducer = (oldstate = [] ,action)=>{
+            if(action.type == ADD_TODO){
+                return [
+                    ...oldstate,
+                    action.payload
+                ];
+            } else if(action.type == DELETE_TODO){
+                return oldstate.filter(todo => todo.text!=action.payload.text)
+            }
+                
+            return []
+        }
+
+        const store = Redux.createStore(reducer, Redux.applyMiddleware(reduxLogger.default));
+
+        const addTodoUtil = (todo)=>({
+            type : ADD_TODO,
+            payload : todo
+        })
+
+        const deleteTodoUtil = (todo)=>({
+            type : DELETE_TODO,
+            payload : todo
+        })
+
+
+        const addNewTodo = () =>{
+            const input = document.getElementById('todo');
+            const value = input.value;
+            
+            store.dispatch(addTodoUtil({text : value}))
+            input.value=''
+
+        }
+        
+        const deleteTodo = (todo) =>{
+            store.dispatch(deleteTodoUtil(todo))
+        }
+
+        const renderCount = () =>{
+            const h1  = document.getElementById("count");
+            h1.innerHTML = store.getState().length
+        }
+
+        const rendertodos = () =>{
+            const todosList = document.getElementById("todos");
+            todosList.innerHTML=''
+            store.getState().forEach(todo=>{
+                const li = document.createElement('li');
+                li.appendChild(
+                    document.createTextNode(todo.text)
+                );
+                li.addEventListener('click', ()=>{
+                    deleteTodo(todo);
+                })
+                todosList.appendChild(li);
+            })
+        }
+
+
+        store.subscribe(renderCount);
+        store.subscribe(rendertodos);
+        // const action = {
+        //     type : "ADD_TODO",
+        //     payload : {
+        //         text : "develop blogger"
+        //     }
+        // }
+
+        // store.dispatch(action)
+        // console.log(store.getState());
+    </script>
+</body>
+</html>
